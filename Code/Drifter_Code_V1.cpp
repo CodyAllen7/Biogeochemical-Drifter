@@ -16,7 +16,7 @@ int millis_now;
 
 //--------SD configuration------------
 
-#include "SdFat.h"
+#include <SdFat.h>
 const int SD_CHIP_SELECT = D5;
 SdFat SD;
 
@@ -51,14 +51,14 @@ void setup(){
     GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
 
     if (!SD.begin(SD_CHIP_SELECT, SPI_FULL_SPEED)){
-        Serial.println("failed to open car");
+        Serial.println("failed to open card");
         return;
     }
 }
 
 void loop(){
 
-    char c = GPS.read();  //This line is having issues because it isnt used anywhere else
+    GPS.read();
 
     if (GPS.newNMEAreceived()){
         if (!GPS.parse(GPS.lastNMEA()))
@@ -84,22 +84,11 @@ void printToFile(){
     if (!filenameCreated){
         //Year, month, day for filename
         int filenum = 0; //start at zero and increment by one if file exists
-        sprintf(filename, "%02d%02d%02d%02d.csv", GPS.year, GPS.month, GPS.day, filenum); //This line is having issues mentioned below
-      
-	//"resource": "/c:/Users/Stephen/.particle/Boron_Blink/src/Drifter_Code_V1.cpp",
-	//"owner": "cpptools",
-	//"severity": 4,
-//	"message": "'.csv' directive writing 4 bytes into a region of size between 2 and 5 [-Wformat-overflow=]",
-//	"source": "gcc",
-//	"startLineNumber": 87,
-//	"startColumn": 44,
-//	"endLineNumber": 87,
-//	"endColumn": 44
-
+        sprintf(filename, "%02d%02d%02d%02d.csv", GPS.year, GPS.month, GPS.day, filenum);
 
         while (SD.exists(filename)) {
             filenum++;
-            sprintf(filename, "%02d%02d%02d%02d.csv", GPS.year, GPS.month, GPS.day, filenum); // Similar issue mentioned earlier
+            sprintf(filename, "%02d%02d%02d%02d.csv", GPS.year, GPS.month, GPS.day, filenum);
 
         }
         filenameCreated = true;
@@ -220,4 +209,3 @@ void serialPrintGPSLoc() {
   Serial.print(GPS.longitude, 4);
   Serial.println(GPS.lon);
 }
-
