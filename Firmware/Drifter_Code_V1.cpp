@@ -73,6 +73,13 @@ void loop(){
             digitalWrite(MY_LED, led_state);
             serialPrintGPSLoc();
 
+            Serial.println("Reached latitude and longitude print statements");
+
+            Serial.print("Latitude: ");
+            Serial.print(GPS.latitude, 4); // Print latitude with 4 decimal places
+            Serial.print(" Longitude: ");
+            Serial.println(GPS.longitude, 4);
+
         }
         printToFile();
 
