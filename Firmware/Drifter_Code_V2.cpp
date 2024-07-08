@@ -61,7 +61,7 @@ void step2(); //temperature compensation
 void step3(); //send a read command
 void step4(); // print data to serial monitor and to SD card
 
-Sequencer4 Seq(&step1, 1000, &step2, 1000, &step3, 1000, &step4, 1000);
+Sequencer4 Seq(&step1, 250, &step2, 250, &step3, 250, &step4, 250);
 
 //------LED Light-----------------
 
@@ -112,9 +112,9 @@ void loop(){
             Serial.println("Reached latitude and longitude print statements");
 
             Serial.print("Latitude: ");
-            Serial.print(GPS.latitude, 4); // Print latitude with 4 decimal places
+            Serial.print(GPS.latitude, 6); // Print latitude with 6 decimal places
             Serial.print(" Longitude: ");
-            Serial.println(GPS.longitude, 4);
+            Serial.println(GPS.longitude, 6);
 
         }
         printToFile();
@@ -174,7 +174,30 @@ void step4(){
 
       
 }
+void receive_reading(Ezo_board & Sensor){
+    Serial.print(Sensor.get_name()); Serial.print(": ");
+    Serial.print(Sensor.receive_read_cmd());
 
+    switch (Sensor.get_error()){
+        case Ezo_board::SUCCESS:
+          Serial.print(Sensor.get_last_received_reading());
+          break;
+
+        case Ezo_board::FAIL:
+          Serial.print("Failed ");
+          break;
+
+        case Ezo_board::NOT_READY:
+          Serial.print("Pending ");
+          break;
+
+        case Ezo_board::NO_DATA:
+          Serial.print("No Data ");
+          break;
+
+
+    }
+}
 // ---------------Print to SD Card--------------
 void printToFile(){
 
@@ -245,7 +268,7 @@ void printToFile(){
 
         //Angle
         dataFile.print(GPS.angle);
-        dataFile.print(",")
+        dataFile.print(",");
         
 
        
@@ -299,6 +322,8 @@ void serialPrintGPSTime(){
   
   Serial.print(" quality: ");
   Serial.println((int) GPS.fixquality);
+
+
 }
 
 void serialPrintGPSLoc() {
