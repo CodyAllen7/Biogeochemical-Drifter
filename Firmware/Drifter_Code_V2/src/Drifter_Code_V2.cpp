@@ -8,16 +8,16 @@
 
 // Include Particle Device OS APIs
 #include "Particle.h"
-void setup();
-void loop();
-void printToFile();
+//void setup();
+//void loop();
+//void printToFile();
 void serialPrintGPSTime();
 void serialPrintGPSLoc();
-void step1();
-void step2();
-void step3();
-void step4();
-void receive_reading(Ezo_board & Sensor);
+//void step1();
+//void step2();
+//void step3();
+//void step4();
+//void receive_reading(Ezo_board & Sensor);
 
 long real_time;
 int millis_now;
@@ -40,8 +40,9 @@ uint32_t timer = millis();
 
 //------Sensor Array----------------------------
 
-#include <Ezo_i2c.h>
+//#include "Ezo_I2c_lib-master.h"
 #include <Wire.h>
+#include <Ezo_i2c.h>
 #include <Ezo_i2c_util.h>
 #include <iot_cmd.h>
 #include <sequencer4.h>
@@ -61,7 +62,7 @@ void step2(); //temperature compensation
 void step3(); //send a read command
 void step4(); // print data to serial monitor and to SD card
 
-Sequencer4 Seq(&step1, 300, &step2, 50, &step3, 900, &step4, 25);
+Sequencer4 Seq(&step1, 300, &step2, 300, &step3, 900, &step4, 500);
 
 //------LED Light-----------------
 
@@ -100,7 +101,7 @@ void loop(){
         if (!GPS.parse(GPS.lastNMEA()))
         return;
     }
-    if (millis() - timer > 1000){
+    if (millis() - timer > 2000){
         timer = millis();
         serialPrintGPSTime();
 
@@ -117,7 +118,7 @@ void loop(){
             Serial.println(GPS.longitude, 6);
 
         }
-        printToFile();
+        //PrintFile();
 
     }
     
@@ -247,7 +248,7 @@ void printToFile(){
         dataFile.print(",");
 
         //Elapsed time
-        dataFile.print(millis()/1000);
+        dataFile.print(millis()/2000);
         dataFile.print(",");
 
         //Location
@@ -347,9 +348,9 @@ void serialPrintGPSTime(){
 
 void serialPrintGPSLoc() {
   Serial.print("Location: ");
-  Serial.print(GPS.latitude, 4);
+  Serial.print(GPS.latitude, 6);
   Serial.print(GPS.lat);
   Serial.print(", ");
-  Serial.print(GPS.longitude, 4);
+  Serial.print(GPS.longitude, 6);
   Serial.println(GPS.lon);
 }
