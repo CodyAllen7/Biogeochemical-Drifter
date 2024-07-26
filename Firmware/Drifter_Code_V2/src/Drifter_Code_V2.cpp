@@ -10,7 +10,7 @@
 #include "Particle.h"
 //void setup();
 //void loop();
-//void printToFile();
+void printToFile();
 void serialPrintGPSTime();
 void serialPrintGPSLoc();
 //void step1();
@@ -118,7 +118,7 @@ void loop(){
             Serial.println(GPS.longitude, 6);
 
         }
-        //PrintFile();
+        printToFile();
 
     }
     
