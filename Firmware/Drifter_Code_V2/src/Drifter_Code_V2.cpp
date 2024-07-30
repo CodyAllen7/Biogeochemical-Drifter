@@ -21,7 +21,7 @@ void serialPrintGPSLoc();
 
 long real_time;
 int millis_now;
-
+float get_last_received_reading();
 //--------SD configuration------------
 
 #include <SdFat.h>
@@ -248,7 +248,7 @@ void printToFile(){
         dataFile.print(",");
 
         //Elapsed time
-        dataFile.print(millis()/2000);
+        dataFile.print(millis()/1000);
         dataFile.print(",");
 
         //Location
@@ -270,6 +270,26 @@ void printToFile(){
         //Angle
         dataFile.print(GPS.angle);
         dataFile.print(",");
+
+        //pH
+        dataFile.print(ph.get_last_received_reading());
+        dataFile.print(",");
+
+        //rtd
+        dataFile.print(rtd.get_last_received_reading());
+        dataFile.print(",");
+
+        //DO
+        dataFile.print(DO.get_last_received_reading());
+        dataFile.print(",");
+
+        //EC
+        dataFile.print(ec.get_last_received_reading());
+        dataFile.println();
+
+
+        dataFile.close();
+
         
         // //pH
         // dataFile.print(ph);
