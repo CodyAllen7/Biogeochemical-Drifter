@@ -22,6 +22,10 @@ void serialPrintGPSLoc();
 long real_time;
 int millis_now;
 float get_last_received_reading();
+float last_ph = 0.0;
+float last_rtd = 0.0;
+float last_do = 0.0;
+float last_ec = 0.0;
 //--------SD configuration------------
 
 #include <SdFat.h>
@@ -102,7 +106,7 @@ Particle.connect();
     // Wait until the Particle cloud connection is established
     delay(1000);
   }
-  Particle.publish("Connected to Cellular", "Success", PRIVATE);
+  Particle.publish("Cellular connected and Publishing", "Success", PRIVATE);
   publishData()
 void loop(){
 
@@ -168,27 +172,34 @@ void step3(){
 }
 
 void step4(){
-    receive_and_print_reading(rtd);
-      if (rtd.get_error() == Ezo_board::SUCCESS);
-      Serial.print("  ");
-    Serial.println();
+      // RTD (temperature)
+    if (rtd.get_error() == Ezo_board::SUCCESS) {
+        last_rtd = rtd.get_last_received_reading();  // Store latest RTD reading
+        Serial.print("RTD: ");
+        Serial.println(last_rtd);
+    }
 
-    receive_and_print_reading(ph);
-      if (ph.get_error() == Ezo_board::SUCCESS);
-      Serial.print("  ");
-    Serial.println();
+    // pH
+    if (ph.get_error() == Ezo_board::SUCCESS) {
+        last_ph = ph.get_last_received_reading();  // Store latest pH reading
+        Serial.print("pH: ");
+        Serial.println(last_ph);
+    }
 
-    receive_and_print_reading(ec);
-      if (ec.get_error() == Ezo_board::SUCCESS);
-      Serial.print("  ");
-    Serial.println();
+    // EC
+    if (ec.get_error() == Ezo_board::SUCCESS) {
+        last_ec = ec.get_last_received_reading();  // Store latest EC reading
+        Serial.print("EC: ");
+        Serial.println(last_ec);
+    }
 
-    receive_and_print_reading(DO);
-      if (DO.get_error() == Ezo_board::SUCCESS);
-      Serial.print("  ");
+    // DO
+    if (DO.get_error() == Ezo_board::SUCCESS) {
+        last_do = DO.get_last_received_reading();  // Store latest DO reading
+        Serial.print("DO: ");
+        Serial.println(last_do);
+    }
     Serial.println();
-
-      
 }
 void receive_reading(Ezo_board & Sensor){
     Serial.print(Sensor.get_name()); Serial.print(": ");
@@ -391,12 +402,18 @@ void serialPrintGPSLoc() {
 }
 
 void publishData() {
-  // Create your data payload (replace this with your actual data)
-  String data = String::format("Sensor reading: %d", random(0, 100));  // Example data
+    // Format the data as a string with sensor readings
+    String data = String::format(
+        "pH: %.2f, RTD (Temp): %.2f°C, DO: %.2f mg/L, EC: %.2f µS/cm",
+        last_ph, last_rtd, last_do, last_ec
+    );
 
-  // Publish data to the Particle Cloud
-  Particle.publish("sensor-data", data, PRIVATE);
+    // Publish the data to the Particle Cloud
+    Particle.publish("sensor-data", data, PRIVATE);
 
-  // Log the time of this publish event
-  lastPublishTime = millis();
+    // Log the time of this publish event
+    lastPublishTime = millis();
+    
+    // Print the data to the serial monitor for debugging
+    Serial.println("Published Data: " + data);
 }
