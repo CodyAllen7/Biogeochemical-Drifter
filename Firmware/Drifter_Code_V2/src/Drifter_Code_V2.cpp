@@ -71,10 +71,17 @@ bool led_state = HIGH;
 
 SYSTEM_MODE(SEMI_AUTOMATIC);
 SYSTEM_THREAD(ENABLED);
-
+unsigned long lastPublishTime = 0;  // Track when we last sent data
+const unsigned long publishInterval = 300000;  // 5 minutes (in milliseconds)
 void setup(){
     pinMode(MY_LED, OUTPUT);
     Wire.begin();
+
+    Cellular.on();
+    Cellular.connect();
+     while (!Cellular.ready()) {
+    // Wait until the cellular connection is established
+    delay(1000);
 
     Serial.begin(115200);
     Serial.println("Adafruit GPS Sensor Test");
@@ -90,7 +97,13 @@ void setup(){
         return;
     }
 }
-
+Particle.connect();
+  while (!Particle.connected()) {
+    // Wait until the Particle cloud connection is established
+    delay(1000);
+  }
+  Particle.publish("Connected to Cellular", "Success", PRIVATE);
+  publishData()
 void loop(){
 
     Seq.run();
@@ -122,7 +135,9 @@ void loop(){
 
     }
     
-    
+    if (millis() - lastPublishTime >= publishInterval) {
+    publishData();
+  }
 
 }
 
@@ -373,4 +388,15 @@ void serialPrintGPSLoc() {
   Serial.print(", ");
   Serial.print(GPS.longitude, 6);
   Serial.println(GPS.lon);
+}
+
+void publishData() {
+  // Create your data payload (replace this with your actual data)
+  String data = String::format("Sensor reading: %d", random(0, 100));  // Example data
+
+  // Publish data to the Particle Cloud
+  Particle.publish("sensor-data", data, PRIVATE);
+
+  // Log the time of this publish event
+  lastPublishTime = millis();
 }
