@@ -131,8 +131,10 @@ void loop(){
 
             Serial.print("Latitude: ");
             Serial.print(GPS.latitude, 6); // Print latitude with 6 decimal places
+            Serial.println(last_lat);
             Serial.print(" Longitude: ");
             Serial.println(GPS.longitude, 6);
+            Serial.println(last_lon);
 
         }
         printToFile();
@@ -400,7 +402,31 @@ void serialPrintGPSLoc() {
   Serial.print(GPS.longitude, 6);
   Serial.println(GPS.lon);
 }
+void publishState(){
+    bool isMaxTime = false;
+    stateTime = millis();
 
+    while (!isMaxTime){
+        if(!Particle.connected()){
+            Particle.connect();
+            Log.infor("Trying to connect");
+        }
+        if (Particle.connected()){
+            Log.info("publishing data");
+            snprintf(data, sizeof(data), "%li,%f,%f,%f,%f,%f,%f",
+            real_time,
+            last_lat,
+            last_lon,
+            last_rtd,
+            last_ph,
+            last_ec,
+            last_do
+
+            );
+    
+        }
+    }
+}
 void publishData() {
     // Format the data as a string with sensor readings
     String data = String::format(
