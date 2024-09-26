@@ -423,6 +423,27 @@ void publishState(){
             last_do
 
             );
+
+            delay(2000);
+
+            bool success = Particle.publish(data, PRIVATE, WITH_ACK);
+            Log.info("publish result %d", success);
+
+            delay(2000);
+
+            isMaxTime = true;
+            state = SLEEP_STATE;
+        } else {
+            if (millis() - stateTime >= MAX_TIME_TO_PUBLISH_MS) {
+                isMaxTime = true;
+                state = SLEEP_STATE;
+                Log.info("max time for publishing reached without success: go to sleep");
+
+            }
+            Log.info("Not max time, try again to connect and publish");
+            delay(500);
+            
+        }
     
         }
     }
