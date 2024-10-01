@@ -55,6 +55,7 @@ void step2();
 void step3();
 void step4();
 void receive_reading(Ezo_board & Sensor);
+void publishData();
 
 Ezo_board ph = Ezo_board(99, "PH");
 Ezo_board rtd = Ezo_board(102, "TEMP");
@@ -107,7 +108,8 @@ Particle.connect();
     delay(1000);
   }
   Particle.publish("Cellular connected and Publishing", "Success", PRIVATE);
-  publishData()
+
+}
 void loop(){
 
     Seq.run();
@@ -131,10 +133,8 @@ void loop(){
 
             Serial.print("Latitude: ");
             Serial.print(GPS.latitude, 6); // Print latitude with 6 decimal places
-            Serial.println(last_lat);
             Serial.print(" Longitude: ");
             Serial.println(GPS.longitude, 6);
-            Serial.println(last_lon);
 
         }
         printToFile();
@@ -402,57 +402,57 @@ void serialPrintGPSLoc() {
   Serial.print(GPS.longitude, 6);
   Serial.println(GPS.lon);
 }
-void publishState(){
-    bool isMaxTime = false;
-    stateTime = millis();
+// void publishState(){
+//     bool isMaxTime = false;
+//     stateTime = millis();
 
-    while (!isMaxTime){
-        if(!Particle.connected()){
-            Particle.connect();
-            Log.infor("Trying to connect");
-        }
-        if (Particle.connected()){
-            Log.info("publishing data");
-            snprintf(data, sizeof(data), "%li,%f,%f,%f,%f,%f,%f",
-            real_time,
-            last_lat,
-            last_lon,
-            last_rtd,
-            last_ph,
-            last_ec,
-            last_do
+//     while (!isMaxTime){
+//         if(!Particle.connected()){
+//             Particle.connect();
+//             Log.info("Trying to connect");
+//         }
+//         if (Particle.connected()){
+//             Log.info("publishing data");
+//             snprintf(data, sizeof(data), "%li,%f,%f,%f,%f,%f,%f",
+//             real_time,
+//             last_lat,
+//             last_lon,
+//             last_rtd,
+//             last_ph,
+//             last_ec,
+//             last_do
 
-            );
+//             );
 
-            delay(2000);
+//             delay(2000);
 
-            bool success = Particle.publish(data, PRIVATE, WITH_ACK);
-            Log.info("publish result %d", success);
+//             bool success = Particle.publish(data, PRIVATE, WITH_ACK);
+//             Log.info("publish result %d", success);
 
-            delay(2000);
+//             delay(2000);
 
-            isMaxTime = true;
-            state = SLEEP_STATE;
-        } else {
-            if (millis() - stateTime >= MAX_TIME_TO_PUBLISH_MS) {
-                isMaxTime = true;
-                state = SLEEP_STATE;
-                Log.info("max time for publishing reached without success: go to sleep");
+//             isMaxTime = true;
+//             state = SLEEP_STATE;
+//         } else {
+//             if (millis() - stateTime >= MAX_TIME_TO_PUBLISH_MS) {
+//                 isMaxTime = true;
+//                 state = SLEEP_STATE;
+//                 Log.info("max time for publishing reached without success: go to sleep");
 
-            }
-            Log.info("Not max time, try again to connect and publish");
-            delay(500);
+//             }
+//             Log.info("Not max time, try again to connect and publish");
+//             delay(500);
             
-        }
+//         }
     
-        }
-    }
-}
+//         }
+//     }
+// }
 void publishData() {
     // Format the data as a string with sensor readings
     String data = String::format(
-        "pH: %.2f, RTD (Temp): %.2f°C, DO: %.2f mg/L, EC: %.2f µS/cm",
-        last_ph, last_rtd, last_do, last_ec
+        "Time: %d, GPS_Lat: %li, GPS_Lon: %li,pH: %.2f, RTD (Temp): %.2f°C, DO: %.2f mg/L, EC: %.2f µS/cm",
+        Time.now(), GPS.latitude, GPS.longitude, last_rtd, last_do, last_ec
     );
 
     // Publish the data to the Particle Cloud
