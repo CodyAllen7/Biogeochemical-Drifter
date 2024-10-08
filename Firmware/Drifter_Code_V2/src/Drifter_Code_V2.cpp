@@ -82,16 +82,16 @@ void setup(){
     pinMode(MY_LED, OUTPUT);
     Wire.begin();
 
-    Cellular.on();
-    Cellular.connect();
-     while (!Cellular.ready()) {
+    Cellular.off();
+    //Cellular.connect();
+     
     // Wait until the cellular connection is established
     delay(1000);
 
     Serial.begin(115200);
     Serial.println("Adafruit GPS Sensor Test");
 
-    GPS.begin(9600);
+    GPS.begin(115200);
 
     GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
 
@@ -101,13 +101,13 @@ void setup(){
         Serial.println("failed to open card");
         return;
     }
-}
-Particle.connect();
-  while (!Particle.connected()) {
-    // Wait until the Particle cloud connection is established
-    delay(1000);
-  }
-  Particle.publish("Cellular connected and Publishing", "Success", PRIVATE);
+
+// Particle.connect();
+//  while (!Particle.connected()) {
+//     // Wait until the Particle cloud connection is established
+//     delay(1000);
+//   }
+//   Particle.publish("Cellular connected and Publishing", "Success", PRIVATE);
 
 }
 void loop(){
@@ -141,9 +141,9 @@ void loop(){
 
     }
     
-    if (millis() - lastPublishTime >= publishInterval) {
-    publishData();
-  }
+//     if (millis() - lastPublishTime >= publishInterval) {
+//     publishData();
+//   }
 
 }
 
