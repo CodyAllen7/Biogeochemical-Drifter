@@ -133,8 +133,13 @@ void loop(){
 
             Serial.print("Latitude: ");
             Serial.print(GPS.latitude, 6); // Print latitude with 6 decimal places
+            Serial.print(" ");
+            Serial.print(GPS.lat);
+
             Serial.print(" Longitude: ");
-            Serial.println(GPS.longitude, 6);
+            Serial.print(GPS.longitude, 6);
+            Serial.print(" ");
+            Serial.println(GPS.lon);
 
         }
         printToFile();
