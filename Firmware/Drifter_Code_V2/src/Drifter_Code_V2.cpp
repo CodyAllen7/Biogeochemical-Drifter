@@ -202,6 +202,7 @@ void step3(){
 
 void step4(){
     // RTD (temperature)
+     receive_and_print_reading(rtd);
     if (rtd.get_error() == Ezo_board::SUCCESS) {
         last_rtd = rtd.get_last_received_reading();  // Store latest RTD reading
         Serial.print("RTD: ");
@@ -212,6 +213,7 @@ void step4(){
     }
 
     // pH
+    receive_and_print_reading(ph);
     if (ph.get_error() == Ezo_board::SUCCESS) {
         last_ph = ph.get_last_received_reading();  // Store latest pH reading
         Serial.print("pH: ");
@@ -222,6 +224,7 @@ void step4(){
     }
 
     // EC
+    receive_and_print_reading(ec);
     if (ec.get_error() == Ezo_board::SUCCESS) {
         last_ec = ec.get_last_received_reading();  // Store latest EC reading
         Serial.print("EC: ");
@@ -232,6 +235,7 @@ void step4(){
     }
 
     // DO
+    receive_and_print_reading(DO);
     if (DO.get_error() == Ezo_board::SUCCESS) {
         last_do = DO.get_last_received_reading();  // Store latest DO reading
         Serial.print("DO: ");
