@@ -19,6 +19,39 @@ float last_ph = 0.0;
 float last_rtd = 0.0;
 float last_do = 0.0;
 float last_ec = 0.0;
+
+//--------Scan for i2c devices---------
+void scanI2CDevices() {
+    byte error, address;
+    int nDevices;
+
+    Serial.println("Scanning for I2C devices...");
+    nDevices = 0;
+
+    for (address = 1; address < 127; address++) {
+        Wire.beginTransmission(address);
+        error = Wire.endTransmission();
+
+        if (error == 0) {
+            Serial.print("I2C device found at address 0x");
+            if (address < 16)
+                Serial.print("0");
+            Serial.print(address, HEX);
+            Serial.println(" !");
+            nDevices++;
+        } else if (error == 4) {
+            Serial.print("Unknown error at address 0x");
+            if (address < 16)
+                Serial.print("0");
+            Serial.println(address, HEX);
+        }
+    }
+
+    if (nDevices == 0)
+        Serial.println("No I2C devices found.\n");
+    else
+        Serial.println("Done scanning.\n");
+}
 //--------SD configuration------------
 
 #include <SdFat.h>
@@ -90,7 +123,7 @@ void setup(){
         Serial.println("failed to open card");
         return;
     }
-
+     scanI2CDevices(); //Scan for I2C devices
 // Particle.connect();
 //  while (!Particle.connected()) {
 //     // Wait until the Particle cloud connection is established
@@ -168,11 +201,14 @@ void step3(){
 }
 
 void step4(){
-      // RTD (temperature)
+    // RTD (temperature)
     if (rtd.get_error() == Ezo_board::SUCCESS) {
         last_rtd = rtd.get_last_received_reading();  // Store latest RTD reading
         Serial.print("RTD: ");
         Serial.println(last_rtd);
+    } else {
+        Serial.print("RTD reading error: ");
+        Serial.println(rtd.get_error());
     }
 
     // pH
@@ -180,6 +216,9 @@ void step4(){
         last_ph = ph.get_last_received_reading();  // Store latest pH reading
         Serial.print("pH: ");
         Serial.println(last_ph);
+    } else {
+        Serial.print("pH reading error: ");
+        Serial.println(ph.get_error());
     }
 
     // EC
@@ -187,6 +226,9 @@ void step4(){
         last_ec = ec.get_last_received_reading();  // Store latest EC reading
         Serial.print("EC: ");
         Serial.println(last_ec);
+    } else {
+        Serial.print("EC reading error: ");
+        Serial.println(ec.get_error());
     }
 
     // DO
@@ -194,6 +236,9 @@ void step4(){
         last_do = DO.get_last_received_reading();  // Store latest DO reading
         Serial.print("DO: ");
         Serial.println(last_do);
+    } else {
+        Serial.print("DO reading error: ");
+        Serial.println(DO.get_error());
     }
     Serial.println();
 }
