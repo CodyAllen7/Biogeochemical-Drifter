@@ -81,6 +81,7 @@ const unsigned long publishInterval = 300000;  // 5 minutes (in milliseconds)
 void setup(){
     pinMode(MY_LED, OUTPUT);
     Wire.begin();
+    Seq.reset();
 
     Cellular.off();
     //Cellular.connect();
@@ -88,10 +89,10 @@ void setup(){
     // Wait until the cellular connection is established
     delay(1000);
 
-    Serial.begin(115200);
+    Serial.begin(9600);
     Serial.println("Adafruit GPS Sensor Test");
 
-    GPS.begin(115200);
+    GPS.begin(9600);
 
     GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
 
