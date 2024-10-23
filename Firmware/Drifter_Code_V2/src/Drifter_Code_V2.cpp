@@ -8,17 +8,10 @@
 
 // Include Particle Device OS APIs
 #include "Particle.h"
-//void setup();
-//void loop();
+
 void printToFile();
 void serialPrintGPSTime();
 void serialPrintGPSLoc();
-//void step1();
-//void step2();
-//void step3();
-//void step4();
-//void receive_reading(Ezo_board & Sensor);
-
 long real_time;
 int millis_now;
 float get_last_received_reading();
@@ -50,10 +43,10 @@ uint32_t timer = millis();
 #include <Ezo_i2c_util.h>
 #include <iot_cmd.h>
 #include <sequencer4.h>
-void step1();
-void step2();
-void step3();
-void step4();
+void step1();//Read RTD circuit
+void step2();//temperature compensation
+void step3();//send a read command
+void step4();// print data to serial monitor and to SD card
 void receive_reading(Ezo_board & Sensor);
 void publishData();
 
@@ -61,11 +54,6 @@ Ezo_board ph = Ezo_board(99, "PH");
 Ezo_board rtd = Ezo_board(102, "TEMP");
 Ezo_board DO = Ezo_board(97, "DO");
 Ezo_board ec = Ezo_board(100, "EC");
-
-void step1(); //Read RTD circuit
-void step2(); //temperature compensation
-void step3(); //send a read command
-void step4(); // print data to serial monitor and to SD card
 
 Sequencer4 Seq(&step1, 300, &step2, 300, &step3, 900, &step4, 500);
 
